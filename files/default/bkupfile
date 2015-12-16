@@ -1,0 +1,449 @@
+#!/bin/csh -f
+#
+# bkupfile -- To create a date-appended backup of one or more files, with the
+#             backup having the same creation date/time as the original and,
+#             if possible (as limited by permissions), the same owner/group
+#             information.
+#
+#             The format of the name for the backup file will be:
+#
+#                       orig_file_name.yyyymmdd
+#
+#             with a lower case letter in the range of 'a'-'z' tacked onto the
+#             end to make the name unique if a date-appended file of that name
+#             already exists, with a further numerical appendage if warranted
+#	      to render the backup file unique and avoid conflict with any
+#	      name variant which could result from compression/uncompression.
+#	      Compression will additionally result in an appended ".Z" (if the
+#	      file is large enough to warrant compression), or ".gz", depending
+#	      upon compress option.
+#
+#             Variant names of this script:
+#               bkurfile     - to back up by renaming the file to a datestamped
+#                              name, with the option of compressing the backup
+#                              copy.
+#               cut-off-file - Intended for breaking off a log file to a backup
+#                              name and replacing the original file with a
+#			       zero-length file, with the option of compressing
+#			       the backup copy.
+#
+# INVOKE AS:  "bkupfile [-c|-C] [-q] [-r|-z] FILE [FILE...]"
+#
+#          or "bkurfile [-c|-C] [-q] FILE [FILE...]"   (Back up by renaming - name
+#                                                       a symb. link to bkupfile)
+#
+#          or "cut-off-file [-c|-C] [-q] FILE [FILE...]"   (symb. link to bkupfile)
+#
+#        where:  -c	Says to compress the backup file via 'compress' command
+#			for ordinary compression.
+#                -C	Says to compress the backup file via 'gzip -9' command
+#			for maximal compression.  (Big compress.)  Takes longer
+#			than -c.
+#                -q	"Quiet": do not output success message.
+#                -r	Says to backup by renaming the original file to a
+#			backup name.  Mutually exclusive with -z.
+#                -z	Says to zero the original file after backup (a "file
+#			cutoff" operation).  Mutually exclusive with -r.
+#                FILE	A list of one or more files to back up.
+#
+#	If both -c and -C are coded, the latest one applies to subsequently
+#	named files up until the next -c or -C is encountered to control the
+#	compression of files named later in the list.  This also makes it
+#	possible to backup the same file with both types of compression, as
+#	in "bkupfile -c filex -C filex".
+#
+# RETURNS:  $status set to the number of files which were found not to exist;
+#           or reflects processing utility status code when the script stops
+#           because of a processing problem.  Exit 0 if no problems.
+#
+# NOTES:
+#
+#    - It is tempting to rewrite this in Perl, but a utility like this may be
+#      used in more basic systems states where things like Perl may not be
+#      available, so I've constrained it to C shell.
+#
+#
+# HISTORY:
+#
+#    1992/07/07  Created by Richard Sims
+#    1992/11/12  Added logic to preserve owner and group info, if possible.  RBS
+#    1993/07/28  Make date format YYYYMMDD instead of MMDDYY, to make it more
+#                compatible with the approach of 'datestamp-filename'.  RBS
+#    1993/12/20  Make compatible with Sun, which necessitated using "ls -g"
+#                option and assuring variable names not gt 20 chars.  RBS
+#    1994/09/02  Implement -c, -r, and -z options; support multiple files in
+#                one invocation; symb. link for bkurfile, cut-off-file.  RBS
+#    1995/06/08  Restructure; add -C capability; make the backup file suffix
+#                selection infinite.  RBS
+#    1998/08/05  Modernize command path names.  Expand unix type determination.  RBS
+#    1999/04/02  Update to determine solaris version via uname -a output.   Nik
+#    1999/07/26  Update to work on Linux boxes. dsmk
+#    2003/04/25  Add -suffix option so the invoker can specify the timestamp
+#                for rotation.  Useful for cron scripts that might be cutting
+#                off yesterday's files.  Nik
+#
+
+# bin_dir gets set to the directory where all the binaries are located.
+# This is needed as Linux puts most core binaries in /bin instead of /usr/bin
+# -dsmk 7/26/99
+set bin_dir = "/bin";
+
+set script_name = `$bin_dir/basename $0`;
+
+if ("$script_name" == "bkurfile") then
+   set invocation_syntax = "bkurfile [-c|-C] [-q] [-suffix suffix] FILE [FILE...]";
+else if ("$script_name" == "cut-off-file") then
+   set invocation_syntax = "cut-off-file [-c|-C] [-q] [-suffix suffix] FILE [FILE...]";
+else
+   set invocation_syntax = "bkupfile [-c|-C] [-q] [-r|-z] [-suffix suffix] FILE [FILE...]";
+endif
+
+#________________________________Preliminaries___________________________________
+@ script_exit_code = 0;		# To start.
+
+
+#___________________________Determine Unix type_______________________________
+# In-stream logic to determine the type of Unix system.
+# Will set variable "unixtype" to be one of the following:
+#         "AIX/370"	if AIX/370 (370 or XA mode)
+#         "AIX/6000"	if AIX running on the RS/6000
+#         "SUN"		if a Sun system
+#         "SOLARIS"	if a Sun Solaris system
+#         "A/UX"	if an Apple A/UX system
+#         "MACHTEN"	if a Mac-based MachTen Unix/UX system
+#         "UNKNOWN"	if something went wrong or system unidentifiable
+#
+set x = (`$bin_dir/uname -a`);
+if ($x[1] == "AIX") then
+   if ($x[5] == "B370"  ||  $x[5] == "XA370") then
+      set unixtype = "AIX/370";
+   else
+      set unixtype = "AIX/6000";
+   endif
+else if ($x[1] == "SunOS") then
+   set v = `echo $x[3] | /usr/bin/sed -n -e 's/^\([1-9]*\)\..*/\1/p'`;
+#   echo "Sun version = $v"
+   if ($v >= "5") then
+      set unixtype = "SOLARIS";
+   else
+      set unixtype = "SUN";
+   endif
+else if ($x[1] == "A/UX") then
+   set unixtype = "A/UX";
+else if ($x[1] == "machten"  ||  $x[1] == "MachTen"  ||  $x[1] == "powerpc-tenon-machten") then
+   set unixtype = "MACHTEN";
+else
+   set unixtype = "UNKNOWN";
+endif
+
+#__________Get YYYYMMDD for backup file suffix:
+set date_output = (`$bin_dir/date`);
+set yyyy = $date_output[$#date_output];
+set mmdd = `$bin_dir/date +"%m%d"`;   set yyyymmdd = ${yyyy}${mmdd};
+
+#__________Determine system-specific form of ls command to use:
+# Naturally, there is always a complication in getting information from UNIX.
+# In this case, 'ls -l' on AIX/370 mashes the number of hard links up against the
+# permissions field: no blank separator.  'ls -k' yields clean output, but is not
+# present on the RS/6000, whose 'ls -l' is clean.  Sun won't show the group name
+# unless the -g option is used.  We could consider doing either form of ls based
+# upon the HOSTTYPE environment variable, but that variable is undefined in su and
+# cron runs.  We will instead use sed as a filter, to strip off the permissions
+# field by columns.
+if ($unixtype == "SUN") then
+   set ls_cmd = "$bin_dir/ls -lg";
+else
+   set ls_cmd = "$bin_dir/ls -l";
+endif
+
+
+#______________________________Evaluate arguments_______________________________
+set compress = 0;		# Default: no file compression.
+				# If set 1, use 'compress' command.  If 2, 'gzip'.
+set rename = 0;			# Default: not backing up by rename.
+set cutoff = 0;			# Default: no file cutoff.
+set quiet = 0;			# Default: display success message.
+if ("$script_name" == "bkurfile") then
+   set rename = 1;	# Backup by renaming, implicit by script name.
+else if ("$script_name" == "cut-off-file") then
+   set cutoff = 1;	# Backup then zero original, implicit by script name.
+endif
+
+# Go through all the args via shifting
+@ file_count = 0;
+while ($#argv > 0)
+   set arg_val = $1;
+   shift;   # Dispose of the argument and let the next shift into its place.
+   # Look for, process options:
+   set first_char = `echo $arg_val | $bin_dir/sed -n -e 's/^\(.\).*/\1/p'`;
+   if ("$first_char" == "-") then   # It is an option.
+      switch($arg_val)
+         case "-c":
+            set compress = 1;
+            breaksw
+         case "-C":
+            set compress = 2;
+            breaksw
+         case "-q":
+            set quiet = 1;
+            breaksw
+         case "-r":
+            set rename = 1;
+            breaksw
+         case "-z":
+            set cutoff = 1;
+            breaksw
+	 case "-suffix":
+	    set yyyymmdd = $1
+	    shift
+	    breaksw
+         default:
+            echo "Option '$arg_val' not recognized.";
+            echo "Invoke as: $invocation_syntax";   exit 1;
+            breaksw
+      endsw
+      # Watch out for conflicting options.
+      if ($cutoff  &&  $rename) then
+         echo "Conflicting options -r (rename) and -z (cutoff).  Quitting.";   exit 1;
+      endif
+      # Bottom of processing an option.
+   else
+
+      #______________________Not an option, so should be a file name_____________________
+      # Process each file name as it is encountered in the command line operands.
+
+      # Assure that the file exists:
+      set original_file = $arg_val;
+      if (! -e $original_file) then
+         echo "Specified file" $original_file "does not exist or not accessible.  Skipping.";
+         @ script_exit_code++;	# Increment to count the number of files having problems.
+         continue		# Go on to any next file in given list.
+      endif
+
+      # The file exists/is accessible.
+      @ file_count ++;
+
+      # Obtain the attributes of the original file so that we can later make the
+      # attributes of the backup file the same.
+      # Begin by getting the file attributes via 'ls' and space-separating the
+      # permissions from the rest of the line to assure no abutment, and split
+      # the u,g,o components of the permissions so that we can index-reference them.
+      # (The goal here is to minimize the number of costly 'sed's we have to issue.)
+      set ls_output = `$ls_cmd $original_file | $bin_dir/sed -e 's/^.\(...\)\(...\)\(...\)\(.*\)/\1 \2 \3 \4/'`;
+      set orig_file_owner = $ls_output[5];	# From that, obtain file owner
+      set orig_file_group = $ls_output[6];	# and group identity.
+      # Now extricate the u,g,o permissions from the ls response, removing the
+      # dashes (as occur in "r-x"), for later feeding to chmod:
+      set chmod_perms = `echo u=$ls_output[1],g=$ls_output[2],o=$ls_output[3] | $bin_dir/sed -e 's/-//g'`;
+
+      # Okay to proceed.  Begin by identifying an available backup name for this file.
+      # The logic determines an available name suffix which does not conflict with
+      # any name that would result from a compress or decompress of the same file name.
+      # The suffix is the current ".YYYYMMDD" date, with an appendage chosen starting
+      # with null, then 'a'-'z', then 'zN', where N is 1->infinity.
+      set sufnum = "";
+      foreach i ("" "a" "b" "c" "d" "e" "f" "g" "h" "i" "j" "k" "l" "m" \
+                    "n" "o" "p" "q" "r" "s" "t" "u" "v" "w" "x" "y" "z" )
+         set backup_file = ${original_file}.${yyyymmdd}${i}${sufnum};
+         # We want to assure that the backup name chosen does not get in the
+         # way of a subsequent compress or uncompress.
+         if (! (-e $backup_file  ||  -e ${backup_file}".Z"  ||  -e ${backup_file}".gz")) then
+            set keep_going = 0;	# To have the while-loop end.
+            break
+         endif
+         # There are files with suffix letters a-z.  Keep trying, by appending
+         # numbers to the 'z' (which is better than going to 'a1', 'b1', etc.,
+         # so as to see things in expected name order in a directory listing).
+         if ("$i" == "z") then
+            while (1)
+               @ sufnum++;	# Increment the numerical portion of the suffix.
+				# The first time will cause the initialized null
+				# ("") to be replaced by "1".
+               set backup_file = ${original_file}.${yyyymmdd}${i}${sufnum};
+               # We want to assure that the backup name chosen does not get in the
+               # way of a subsequent compress or uncompress.
+               if (! (-e $backup_file  ||  -e ${backup_file}".Z"  ||  -e ${backup_file}".gz")) then
+                  break		# Exits the 'while', and the 'foreach' also
+				# because we were at its final value.
+               endif
+            end
+         endif
+      end
+      # We have established a name for the (pre-compress) backup file.
+
+      #____________________________Possibly perform bkurfile_______________________________
+      if ($rename) then
+
+         #______________________To produce backup by renaming original_____________________
+         $bin_dir/mv $original_file $backup_file;	# Attempt file rename.
+         set return_code = $status;
+         if ($return_code != 0) then
+            # File rename failed, probably for lack of privileges.
+            echo "Mv of $original_file to $backup_file failed.";
+            exit $return_code;
+         endif
+         # The original file has now been renamed to the backup name.
+         # If compress also requested, do that later in this script.
+
+         # Bottom of doing a bkurfile.
+
+      else if ($cutoff) then
+
+         #______________________It's a file cutoff operation_______________________
+         # Do a 'mv', to rename the file and let any program which is still writing
+         # to that inode continue doing so without interference.  This approach will
+         # prevent the problem of ending up with binary zeroes in the front portion
+         # of the file up to the size at the time of a copy-based cut-off when some
+         # other program still has the file open for writing.
+         $bin_dir/mv $original_file $backup_file;	# Attempt file rename.
+         set return_code = $status;
+         if ($return_code != 0) then
+            # File rename failed, probably for lack of privileges.
+            echo "Mv of $original_file to $backup_file failed - status code $return_code.";
+            exit $return_code;
+         endif
+         # The original file has become its own backup.
+         # Now quickly create an empty replacement file:
+         $bin_dir/cp /dev/null $original_file;
+         set return_code = $status;
+         if ($return_code != 0) then
+            echo "Zeroing of original file '"$original_file"' failed - status code $return_code.";
+            exit $return_code;
+         endif
+
+         # Set attributes on the replacement file to look like the original:
+         # ...owner:
+         $bin_dir/chown $orig_file_owner $original_file;   set return_code = $status;
+         if ($return_code != 0) then
+            echo "Quitting - unable to set owner of cutoff-file replacement.";
+            echo "           Status value ${return_code}.  (You probably aren't superuser, then.)";
+            exit $return_code;   # Give up - don't attempt chgrp.
+         endif
+         # ...group:
+         # Group changed in the copy; try to change it back.  This can be done as a normal
+         # user, but only to a group of which you are a member.  If not, chgrp will
+         # complain with message "You are not a member of the _____ group".
+         $bin_dir/chgrp $orig_file_group $original_file;   set return_code = $status;
+         if ($return_code != 0) then
+            echo "Quitting - unable to set group of cutoff-file replacement.";
+            echo "           Status value ${return_code}.";
+            exit $return_code;   # Give up.
+         endif
+         # ...permissions:
+         $bin_dir/chmod $chmod_perms $original_file;   set return_code = $status;
+         if ($return_code != 0) then
+            echo "Quitting - unable to set permissions of cutoff-file replacement.";
+            echo "           Status value ${return_code}.";
+            exit $return_code;   # Give up.
+         endif
+         # (Another approach would have been to do a 'cp -p' of the backup to
+         #  the original name, and then null-length that, which is a clean way to
+         #  retain all attributes; but the file may have been large, meaning that
+         #  such a copy would be both time-consuming and could fail for lack of
+         #  file system space.  So we have to live with creating a generic
+         #  replacement and then re-establish the attributes.)
+
+         # If compress also requested, do that later in this script.
+
+         # Bottom of doing a cutoff
+
+      else
+
+         #___________________To produce a backup copy (bkupfile operation)________________________
+         $bin_dir/cp -p $original_file $backup_file;   set return_code = $status;
+         if ($return_code != 0) then
+            echo "Copy of '"$original_file"' to '"$backup_file"' failed - status code $return_code.";
+            exit $return_code;
+         endif
+         # A backup copy has been made of the original file, which remains intact.
+
+         # If compress also requested, do that later in this script.
+
+         # Bottom of backup-by-copying, successful.
+
+      # Bottom of processing method of backup.
+      endif
+
+      #________________________Compress backup file if wanted_________________________
+      # Note that compress operations result in the creation of a replacement file,
+      # the original being removed in the process.  Thus, while a cut-off-file operation
+      # would allow writing to the inode to continue from another program having the
+      # file open, the compress will certainly stop any further writing.
+      if ($compress == 1) then
+         #__________________________Perform ordinary compress__________________________
+         $bin_dir/compress $backup_file;		# Compress the backup file.
+         set return_code = $status;
+         # Compress will return status 2 if the file is too small to be worth compressing.
+         if ($return_code != 0  &&  $return_code != 2) then
+            echo "Compress of backup file '"$backup_file"' failed - status code $return_code.";
+            exit $return_code;
+         endif
+         # The compress will tack a ".Z" onto the end of the file if it
+         # actually found it worth compressing, so account for the name
+         # change; but be prepared for small files being unchanged, as
+         # compress won't bother with them.
+         if (-e ${backup_file}".Z") then
+            set backup_file = ${backup_file}".Z";
+         endif
+      else if ($compress == 2) then
+         #__________________________Perform maximal compress__________________________
+         #/usr/local/bin/gzip -9 $backup_file;		# Compress the backup file.
+         /usr/bin/gzip -9 $backup_file;		# Compress the backup file.
+         set return_code = $status;
+         # Returns 1 if error, 2 if warning.
+         if ($return_code == 1) then
+            echo "Gzip compress of backup file '"$backup_file"' failed - status code $return_code.";
+            exit $return_code;
+         else if ($return_code == 2) then
+            echo "Gzip compress of backup file '"$backup_file"' warning - status code $return_code.";
+         endif
+         # The compress will tack a ".gz" onto the end of the file if it worked.
+         if (-e ${backup_file}".gz") then
+            set backup_file = ${backup_file}".gz";
+         endif
+      endif
+
+      #____________________Set original owner/group on backup if not equal_____________________
+      # If the owner/group on the backup file differ from original, try to make them equal.
+      # Use separate chown and chgrp commands because some systems do not support 'owner.group'
+      # syntax in the chown command.
+      # The following ls,sed operations strip off the permissions because they may be
+      # right up against what follows them, which would thwart indexing.
+      set x = (`$ls_cmd $backup_file | $bin_dir/sed -e 's/^..........//'`);   # Get attributes as a wordlist. 
+      set backup_file_owner = $x[2];
+      set backup_file_group = $x[3];
+      if ("$backup_file_owner" != "$orig_file_owner") then
+         # Owner changed in the copy; try to change it back.  This will work only if done
+         # as superuser.
+         $bin_dir/chown $orig_file_owner $backup_file;   set return_code = $status;
+         if ($return_code != 0) then
+            echo "Quitting - unable to change owner of backup file to match that of original file.";
+            echo "           Status value ${return_code}.  (You probably aren't superuser, then.)";
+            exit $return_code;   # Give up - don't attempt chgrp.
+         endif
+      endif
+      if ("$backup_file_group" != "$orig_file_group") then
+         # Group changed in the copy; try to change it back.  This can be done as a normal
+         # user, but only to a group of which you are a member.  If not, chgrp will
+         # complain with message "You are not a member of the _____ group".
+         $bin_dir/chgrp $orig_file_group $backup_file;   set return_code = $status;
+         if ($return_code != 0) then
+            echo "Quitting - unable to change group of backup file to match that of original file.";
+            echo "         Status value ${return_code}.";
+            exit $return_code;   # Give up.
+         endif
+      endif
+
+      if (! $quiet) then
+         echo "File '$original_file' has been backed up to '$backup_file'.";
+      endif
+      # Bottom of processing a file.
+
+   # Bottom of processing an invocation operand.
+   endif
+# Bottom of processing all invocation operands.
+end
+
+# We probably don't want this much babble:
+#echo "Number of files processed = $file_count.";
+exit $script_exit_code;
