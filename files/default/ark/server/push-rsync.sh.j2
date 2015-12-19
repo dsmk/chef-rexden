@@ -1,0 +1,23 @@
+#! /bin/bash
+name="$1"
+file="/var/cache/push-rsync/rsyncd-${name}.conf"
+root="{{ push_rsync_root }}/$name"
+
+if [ "x$2" = xsize ]; then
+  echo "Size of $name"
+  if [ -d "$root" ]; then
+    /usr/bin/du -sh "$root"/*
+    echo ""
+    echo "Time of last backup: " `stat -c '%y' "$root" `
+  else
+    echo "No backup found for host $name"
+  fi
+  exit
+fi
+
+cp /etc/push-rsync.conf.template "$file"
+echo "path = ${root}" >> "$file"
+#echo "post-xfer exec = /usr/local/sbin/start-rsnapshot.sh $1" >> "$file"
+mkdir -p "$root"
+
+rsync --server --daemon --config="$file" "$root"

@@ -1,0 +1,9 @@
+[push]
+uid = root
+gid = root
+use chroot = true
+max connections = 20
+read only = false
+write only = true
+list = false
+#exclude from = /etc/rsnapshot/files.exclude
