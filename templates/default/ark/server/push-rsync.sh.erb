@@ -1,7 +1,7 @@
 #! /bin/bash
 name="$1"
 file="/var/cache/push-rsync/rsyncd-${name}.conf"
-root="{{ push_rsync_root }}/$name"
+root="<%= node['rexden']['ark_server_root'] %>/$name"
 
 if [ "x$2" = xsize ]; then
   echo "Size of $name"

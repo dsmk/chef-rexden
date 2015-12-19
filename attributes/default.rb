@@ -30,3 +30,4 @@ default['rexden']['syslog_work_dir'] = '/var/cache/rsyslog'
 #
 default['rexden']['ark_server_name'] = 'fawkes.rexden.us'
 default['rexden']['ark_server_ip'] = '192.168.8.19'
+default['rexden']['ark_server_root'] = '/opt/archive/hosts'

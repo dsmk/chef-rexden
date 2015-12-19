@@ -9,7 +9,7 @@ user 'backup' do
   comment "Push Backup User"
   home "/home/backup"
   uid "900"
-  gid "900"
+  gid "backup"
   manage_home true
 end
 
@@ -40,7 +40,7 @@ template '/home/backup/clients' do
   mode '0755'
 end
 
-cookbook_file '/usr/local/sbin/push-rsync.sh' do
+template '/usr/local/sbin/push-rsync.sh' do
   source 'ark/server/push-rsync.sh.erb'
   user 'root'
   group 'root'
@@ -51,12 +51,18 @@ cookbook_file '/etc/push-rsync.conf.template' do
   source 'ark/server/push-rsync.conf.template'
   user 'root'
   group 'root'
-  mode '0644'
+  mode '0444'
 end
 
 directory '/var/cache/push-rsync' do
   user 'root'
   group 'root'
   mode '0750'
+end
+
+directory '/opt/archive' do
+  user 'root'
+  group 'root'
+  mode '0755'
 end
 

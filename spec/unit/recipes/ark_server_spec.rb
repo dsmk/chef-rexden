@@ -20,6 +20,10 @@ describe 'rexden::ark_server' do
       expect { chef_run }.to_not raise_error
     end
 
+    it 'ensures that the push backup group exists' do
+      expect( chef_run ).to create_group('backup')
+    end
+
     it 'ensures that the push backup user exists' do
       expect( chef_run ).to create_user('backup')
     end
@@ -56,6 +60,14 @@ describe 'rexden::ark_server' do
       )
     end
 
+    it 'ensure that the push-rsync.sh exists' do
+      expect( chef_run ).to create_template('/usr/local/sbin/push-rsync.sh').with(
+        user: "root",
+        group: "root",
+        mode: '0555'
+      )
+    end
+
     it 'ensure ark rsync.conf template installed' do
       expect( chef_run ).to create_cookbook_file('/etc/push-rsync.conf.template').with(
         user: 'root',
@@ -68,7 +80,15 @@ describe 'rexden::ark_server' do
       expect( chef_run ).to create_directory('/var/cache/push-rsync').with(
         user: 'root',
         group: 'root',
-        mode: 0750
+        mode: '0750'
+      )
+    end
+
+    it 'ensure that the archive root exists' do
+      expect( chef_run ).to create_directory('/opt/archive').with(
+        user: 'root',
+        group: 'root',
+        mode: '0755'
       )
     end
 
