@@ -25,3 +25,8 @@ default['rexden']['syslog_server'] = 'none'
 # port 5544 is the port we used for the ELK-based log server
 default['rexden']['syslog_port'] = 5544
 default['rexden']['syslog_work_dir'] = '/var/cache/rsyslog'
+
+# Ark client defaults
+#
+default['rexden']['ark_server_name'] = 'fawkes.rexden.us'
+default['rexden']['ark_server_ip'] = '192.168.8.19'
