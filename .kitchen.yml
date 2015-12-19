@@ -1,22 +1,45 @@
 ---
+#driver:
+#  name: vagrant
 driver:
-  name: vagrant
+  name: docker
+  require_chef_omnibus: true
+  memory: 1024k
+  binary: /bin/docker
+  use_sudo: true
+  sudo_command: "/bin/sudo -E"
 
 provisioner:
   name: chef_solo
   #name: chef_zero
+
+platforms:
+  - name: ark_server
+    driver_config:
+      image: "centos/7"
+      platform: "rhel"
 
 # Uncomment the following verifier to leverage Inspec instead of Busser (the
 # default verifier)
 # verifier:
 #   name: inspec
 
-platforms:
-  - name: ubuntu-14.04
-  - name: centos-7.1
+#platforms:
+#  - name: ubuntu-14.04
+#  - name: centos-7.1
 
 suites:
   - name: default
     run_list:
       - recipe[rexden::default]
     attributes:
+  - name: ark_server
+    driver:
+      instance_name: ark_server
+    run_list:
+      - recipe[rexden::ark_server]
+    attributes:
+      rexden:
+        ark_server_name: ark_server
+        ark_server_ip: 127.0.0.1
+
