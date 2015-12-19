@@ -1,6 +1,10 @@
 
 package 'rsync'
 
+group 'backup' do
+  gid "900"
+end
+
 user 'backup' do
   comment "Push Backup User"
   home "/home/backup"
