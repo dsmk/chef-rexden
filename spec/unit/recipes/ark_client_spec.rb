@@ -135,6 +135,10 @@ describe 'rexden::ark_client' do
       )
     end
 
+    it 'creates hostsfile entry for Ark server' do
+      expect( chef_run ).to create_hostsfile_entry('192.168.8.19').with_hostname('fawkes.rexden.us')
+    end
+
     it 'ensure rsync package is installed' do
       expect( chef_run ).to install_package('rsync')
     end

@@ -41,3 +41,8 @@ cookbook_file '/etc/cron.d/ark-cron' do
   mode '0644'
 end
 
+hostsfile_entry node['rexden']['ark_server_ip'] do
+  hostname node['rexden']['ark_server_name']
+  unique true
+end
+
