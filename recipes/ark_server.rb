@@ -54,7 +54,7 @@ cookbook_file '/etc/push-rsync.conf.template' do
   mode '0444'
 end
 
-cookbook_file '/etc/sudoers.d/ark.sudoers' do
+cookbook_file '/etc/sudoers.d/ark' do
   source 'ark/server/ark.sudoers'
   user 'root'
   group 'root'
