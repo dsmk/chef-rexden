@@ -49,10 +49,11 @@ suites:
     excludes: [ 'ark_server' ]
     run_list:
       - recipe[rexden::default]
+      - recipe[rexden::ark_client]
     attributes:
       rexden:
-        ark_server_name: ark_server
-        ark_server_ip: 127.0.0.1
+        ark_server_name: fawkes.rexden.us
+        ark_server_ip: 192.168.33.19
   - name: ark
     excludes: [ 'centos' ]
     driver:
@@ -61,6 +62,6 @@ suites:
       - recipe[rexden::ark_server]
     attributes:
       rexden:
-        ark_server_name: ark_server
-        ark_server_ip: 127.0.0.1
+        ark_server_name: fawkes.rexden.us
+        ark_server_ip: 192.168.33.19
 
