@@ -80,8 +80,8 @@ suites:
       rexden:
         ark_server_name: fawkes.rexden.us
         ark_server_ip: 192.168.33.19
-      icinga2:
-        web2:
-          enable: true
-        classic_ui:
-          enable: false
+#      icinga2:
+#        web2:
+#          enable: true
+#        classic_ui:
+#          enable: false

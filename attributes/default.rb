@@ -32,3 +32,26 @@ default['rexden']['ark_server_name'] = 'fawkes.rexden.us'
 default['rexden']['ark_server_ip'] = '192.168.8.19'
 default['rexden']['ark_server_root'] = '/opt/archive/hosts'
 # set the following variable to mount a remote archive
+
+#
+# Defaults for monitor server (Icinga2 classic ui version)
+#
+default['icinga2']['classic_ui']['users']['guest'] = '$apr1$cA/eVUgT$aIoWUPwV5uONJoYslb7lg0'
+default['icinga2']['classic_ui']['authorized_for_all_services'] = %w(icingaadmin guest)
+default['icinga2']['classic_ui']['authorized_for_all_hosts'] = %w(icingaadmin guest)
+#default['icinga2']['pnp'] = true
+
+#
+# Defaults for monitor server (Icinga2 new web interface)
+#
+#default['icinga2']['classic_ui']['enable'] = false
+#default['icinga2']['web2']['enable'] = true
+
+#
+# VMware environment we want to monitor
+#
+default['rexden']['monitor_vmware'] = [
+  { name: 'dobby.rexden.us', ip: '192.168.8.11' },
+  { name: 'hokey.rexden.us', ip: '192.168.8.13' },
+  { name: 'kreacher.rexden.us', ip: '192.168.8.15' },
+]
