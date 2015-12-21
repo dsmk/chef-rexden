@@ -48,10 +48,18 @@ default['icinga2']['classic_ui']['authorized_for_all_hosts'] = %w(icingaadmin gu
 #default['icinga2']['web2']['enable'] = true
 
 #
+#
+default['icinga2']['ido']['load_schema'] = true
+default['icinga2']['ido']['type'] = 'mysql'
+
+#
 # VMware environment we want to monitor
 #
-default['rexden']['monitor_vmware'] = [
-  { name: 'dobby.rexden.us', ip: '192.168.8.11' },
-  { name: 'hokey.rexden.us', ip: '192.168.8.13' },
-  { name: 'kreacher.rexden.us', ip: '192.168.8.15' },
+default['rexden']['host-templates'] = [
+  { name: 'esxi-host', cmd: 'ping4' },
+]
+default['rexden']['misc-hosts'] = [
+  { name: 'dobby.rexden.us', ip: '192.168.8.11', group: 'elves', type: 'esxi-host' },
+  { name: 'hokey.rexden.us', ip: '192.168.8.13', group: 'elves', type: 'esxi-host' },
+  { name: 'kreacher.rexden.us', ip: '192.168.8.15', group: 'elves', type: 'esxi-host' },
 ]
