@@ -8,3 +8,4 @@ version '0.1.0'
 
 depends 'redhat_subscription_manager', '~> 0.1'
 depends 'hostsfile'
+depends 'icinga2'
