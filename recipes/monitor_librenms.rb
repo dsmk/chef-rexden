@@ -1,3 +1,4 @@
+include_recipe 'selinux::permissive'
 include_recipe 'yum-epel'
 
 #%w( mariadb-server net-snmp mariadb-client ).each do |pkg|
