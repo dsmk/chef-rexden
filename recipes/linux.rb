@@ -71,3 +71,10 @@ if node['platform'] == 'redhat'
   rhsm_repo 'rhel-7-server-extras-rpms'
 end
 
+package "net-snmp"
+
+service 'snmpd' do
+  action [ :enable, :start ]
+end
+
+
