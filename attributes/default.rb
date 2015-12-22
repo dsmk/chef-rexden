@@ -77,3 +77,10 @@ default['librenms']['hosts'] = [
   { name: "192.168.8.15", community: "public", version: "v2c" },
   { name: "192.168.8.251", community: "public", version: "v2c" },
 ]
+
+# 
+# Log server (splunk version)
+#
+default['splunk']['accept_license'] = true
+default['splunk']['is_server'] = true
+
