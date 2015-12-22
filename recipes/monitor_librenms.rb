@@ -41,6 +41,13 @@ service "httpd" do
   action [ :enable, :start ]
 end
 
+firewall_rule 'http' do
+  port 80
+  protocol :tcp
+  position 1
+  command :allow
+end
+
 file "/etc/httpd/conf.d/welcome.conf" do
   action :delete
 end
