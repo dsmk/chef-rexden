@@ -102,6 +102,29 @@ end
   end
 end
 
+# initial database setup
+execute "initialize the database" do
+  cwd "/opt/librenms"
+  command "/bin/php build-base.php >/var/log/librenms-build-base.log 2>&1"
+  creates "/var/log/librenms-build-base.log"
+end
+
+node['librenms']['users'].each do |user|
+  execute "create librenms user #{user[:name]}" do
+    cwd "/opt/librenms"
+    command "/bin/php ./adduser.php '#{user[:name]}' '#{user[:pass]}' 10 '#{user[:email]}' >/var/log/librenms-user-#{user[:name]}.log 2>&1"
+    creates "/var/log/librenms-user-#{user[:name]}.log"
+  end
+end
+
+node['librenms']['hosts'].each do |host|
+  execute "create librenms host #{host[:name]}" do
+    cwd "/opt/librenms"
+    command "/bin/php ./addhost.php '#{host[:name]}' '#{host[:community]}' '#{host[:version]}' >/var/log/librenms-host-#{host[:name]}.log 2>&1"
+    creates "/var/log/librenms-host-#{host[:name]}.log"
+  end
+end
+
 #
 #file "/etc/php.d/timezone.ini" do
 #  content "date.timezone = 'America/New_York'"

@@ -63,3 +63,17 @@ default['rexden']['misc-hosts'] = [
   { name: 'hokey.rexden.us', ip: '192.168.8.13', group: 'elves', type: 'esxi-host' },
   { name: 'kreacher.rexden.us', ip: '192.168.8.15', group: 'elves', type: 'esxi-host' },
 ]
+
+# 
+# LibreNMS sample configuration
+#
+default['librenms']['users'] = [
+  { name: "dsmk", pass: "ChangeMe", email: "david@rexden.us" },
+  { name: "guest", pass: "guest", email: "" },
+]
+default['librenms']['hosts'] = [
+  { name: "192.168.8.11", community: "public", version: "v2c" },
+  { name: "192.168.8.13", community: "public", version: "v2c" },
+  { name: "192.168.8.15", community: "public", version: "v2c" },
+  { name: "192.168.8.251", community: "public", version: "v2c" },
+]
