@@ -23,7 +23,7 @@ end
 
 #RRD Log Directory is missing (/opt/librenms/rrd). Graphing may fail.
 
-%w( php php-cli php-gd php-mysql php-snmp php-pear php-curl php-mcrypt httpd ).each do |pkg|
+%w( php php-cli php-gd php-mysql php-snmp php-pear php-curl php-mcrypt httpd rrdtool ).each do |pkg|
   package pkg
 end
 
