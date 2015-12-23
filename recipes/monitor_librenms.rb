@@ -97,8 +97,8 @@ end
 
 cookbook_file "/etc/cron.d/librenms" do
   source "monitor/librenms.cron"
-  user "librenms"
-  group "librenms"
+  user "root"
+  group "root"
   mode "0444"
 end
 
