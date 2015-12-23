@@ -6,6 +6,9 @@
 #
 # Copyright (c) 2015 The Authors, All Rights Reserved.
 #
+include_recipe "chef-client"
+include_recipe "chef-client::delete_validation"
+
 if node['os'] == 'linux' 
   include_recipe 'rexden::linux'
 end
