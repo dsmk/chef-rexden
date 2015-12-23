@@ -18,3 +18,15 @@ service 'graylog-web' do
 	action [ :enable, :start ]
 end
 
+# port 9000 is the graylog web interface
+# port 12900 is for ?
+# port 5544 for syslog (tcp and udp)
+# port x for GELF
+#[ 9000, 12900 ].each do |port|
+#    firewall_rule "open_port_#{port}" do
+#        port port
+#        protocol :tcp
+#        position 1
+#        command :allow
+#    end
+#end
