@@ -81,6 +81,14 @@ default['librenms']['hosts'] = [
 # 
 # Log server (splunk version)
 #
-default['splunk']['accept_license'] = true
-default['splunk']['is_server'] = true
+#default['splunk']['accept_license'] = true
+#default['splunk']['is_server'] = true
 
+#
+# Log server (graylog version)
+#
+default['java']['jdk_version'] = '7'
+default['java']['install_flavor'] = 'openjdk'
+default['graylog2']['password_secret'] = 'SOG1Rm2YVHIOmFPJv5U8tkw1LVSTSpjgUvh3z6qX5T4gieNcuFlxKWdnYcuW1tNEaWir2AaAWWo7VObYVZbE9GvKLbTDH3CQ'
+default['graylog2']['root_password_sha2'] = '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918'
+default['graylog2']['web']['secret'] = 'ZGrrlMoBDpg9yVrP0gAhbznvUbxQLh5LUyAPz79EULPqlZ1SWDm2Q7uctbL7W2bSgFqeBjvawC4DMPG0JkijA9Imch6ZvOwk'
