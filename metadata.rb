@@ -1,6 +1,6 @@
 name 'rexden'
-maintainer 'The Authors'
-maintainer_email 'you@example.com'
+maintainer 'David King'
+maintainer_email 'david@rexden.us'
 license 'all_rights'
 description 'Installs/Configures rexden'
 long_description 'Installs/Configures rexden'
