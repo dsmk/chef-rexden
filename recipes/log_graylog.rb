@@ -10,11 +10,11 @@ service 'elasticsearch' do
     action [ :enable, :start ]
 end
 
-# service 'graylog-server' do
-# 	action [ :enable, :start ]
-# end
+service 'graylog-server' do
+	action [ :enable, :start ]
+end
 
-# service 'graylog-web' do
-# 	action [ :enable, :start ]
-# end
+service 'graylog-web' do
+	action [ :enable, :start ]
+end
 
