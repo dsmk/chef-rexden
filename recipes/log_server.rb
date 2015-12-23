@@ -1,2 +1,3 @@
 #include_recipe 'rexden'
-include_recipe 'chef-splunk'
+include_recipe 'rexden::log_graylog'
+
