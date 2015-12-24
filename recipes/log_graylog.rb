@@ -1,4 +1,5 @@
 #include_recipe 'rexden'
+include_recipe "selinux::permissive"
 include_recipe 'java'
 include_recipe 'elasticsearch'
 include_recipe 'mongodb'
