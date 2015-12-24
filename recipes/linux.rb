@@ -66,10 +66,10 @@ if node['platform_family'] == 'rhel'
   end
 end
 
-if node['platform'] == 'redhat'
+#if node['platform'] == 'redhat'
   #rhsm_repo 'rhel-7-server-optional-rpms'
-  rhsm_repo 'rhel-7-server-extras-rpms'
-end
+#  rhsm_repo 'rhel-7-server-extras-rpms'
+#end
 
 package "net-snmp"
 
