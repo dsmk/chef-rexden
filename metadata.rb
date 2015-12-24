@@ -4,7 +4,7 @@ maintainer_email 'david@rexden.us'
 license 'all_rights'
 description 'Installs/Configures rexden'
 long_description 'Installs/Configures rexden'
-version '0.2.2'
+version '0.2.4'
 
 depends 'redhat_subscription_manager', '~> 0.1'
 depends 'hostsfile'

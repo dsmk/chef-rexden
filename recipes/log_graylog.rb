@@ -1,5 +1,6 @@
 #include_recipe 'rexden'
 include_recipe "selinux::permissive"
+include_recipe "yum-epel"
 include_recipe 'java'
 include_recipe 'elasticsearch'
 include_recipe 'mongodb'
@@ -17,6 +18,20 @@ end
 
 service 'graylog-web' do
 	action [ :enable, :start ]
+end
+
+execute 'graylog-firewalld-install' do
+    action :nothing
+    command "/usr/bin/firewall-cmd --reload ; /usr/bin/firewall-cmd --add-service=graylog --permanent ; /usr/bin/firewall-cmd --reload"
+end
+
+cookbook_file '/etc/firewalld/services/graylog.xml' do
+    source 'logs/graylog.xml'
+    user 'root'
+    group 'root'
+    mode '0444'
+    only_if "/usr/bin/systemctl status firewalld"
+    notifies :run, 'execute[graylog-firewalld-install]', :immediately
 end
 
 # port 9000 is the graylog web interface
