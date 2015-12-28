@@ -81,6 +81,8 @@ default['librenms']['hosts'] = [
 # 
 # Log server (splunk version)
 #
+default['rexden']['splunk_version'] = "6.3.2-aaff59bb082c"
+default['rexden']['splunk_download_url'] = 'http://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=6.3.2&product=splunk&filename=splunk-6.3.2-aaff59bb082c-linux-2.6-x86_64.rpm&wget=true'
 #default['splunk']['accept_license'] = true
 #default['splunk']['is_server'] = true
 

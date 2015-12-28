@@ -1,0 +1,8 @@
+[default]
+host = <%= node['hostname'] %>
+
+[tcp://5544]
+sourcetype = syslog
+
+[udp://5544]
+sourcetype = syslog

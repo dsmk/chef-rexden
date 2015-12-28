@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<service>
+  <short>Splunk</short>
+  <description>Ports necessary for Splunk operation</description>
+  <port protocol="udp" port="5544"/>
+  <port protocol="tcp" port="5544"/>
+  <port protocol="tcp" port="8000"/>
+</service>
