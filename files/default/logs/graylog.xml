@@ -2,11 +2,11 @@
 <service>
   <short>Katello</short>
   <description>Ports necessary for Katello operation</description>
-  <port protocol="udp" port="69"/>
-  <port protocol="tcp" port="69"/>
-  <port protocol="tcp" port="80"/>
-  <port protocol="tcp" port="443"/>
-  <port protocol="tcp" port="5671"/>
-  <port protocol="tcp" port="8140"/>
-  <port protocol="tcp" port="9090"/>
+  <port protocol="udp" port="5544"/>
+  <port protocol="tcp" port="5544"/>
+  <port protocol="tcp" port="5555"/>
+  <port protocol="tcp" port="9000"/>
+  <port protocol="tcp" port="12900"/>
+  <port protocol="tcp" port="9200"/>
+  <port protocol="tcp" port="9300"/>
 </service>
