@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<service>
+  <short>logserver</short>
+  <description>Ports necessary for central logserver operation</description>
+  <port protocol="udp" port="514"/>
+  <port protocol="tcp" port="514"/>
+</service>

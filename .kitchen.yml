@@ -62,10 +62,10 @@ suites:
   - name: default
     excludes: [ 'ark_server', 'monitor_server', 'log_server' ]
     run_list:
-      - recipe[rexden::default]
-      - recipe[rexden::ark_client]
+      - recipe[rexden]
     attributes:
       rexden:
+        syslog_server: 192.168.33.20
         ark_server_name: fawkes.rexden.us
         ark_server_ip: 192.168.33.19
   - name: ark
@@ -93,7 +93,7 @@ suites:
     driver:
       instance_name: log_server
     run_list:
-      - recipe[rexden::log_splunk]
+      - recipe[rexden::log_server]
     attributes:
       rexden:
         ark_server_name: fawkes.rexden.us
