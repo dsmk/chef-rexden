@@ -57,7 +57,7 @@ if node['platform_family'] == 'rhel'
       owner 'root'
       group 'root'
       mode '0755'
-      notifies :reload, 'service[rsyslog]', :immediately
+      notifies :restart, 'service[rsyslog]', :immediately
     end
 
     service 'rsyslog' do
