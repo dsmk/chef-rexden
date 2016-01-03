@@ -17,3 +17,4 @@ template '/etc/sysconfig/docker' do
   notifies :restart, 'service[docker]', :immediately
 end
 
+# vi: expandtab ts=2 

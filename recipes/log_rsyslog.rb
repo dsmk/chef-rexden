@@ -60,3 +60,5 @@ cookbook_file '/etc/firewalld/direct.xml' do
     only_if "/usr/bin/systemctl status firewalld"
     notifies :run, 'execute[rsyslog-firewalld-restart]', :immediately
 end
+
+# vi: expandtab ts=2 

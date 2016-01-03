@@ -46,3 +46,4 @@ hostsfile_entry node['rexden']['ark_server_ip'] do
   unique true
 end
 
+# vi: expandtab ts=2 

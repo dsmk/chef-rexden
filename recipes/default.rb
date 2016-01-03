@@ -12,3 +12,5 @@ include_recipe "chef-client::delete_validation"
 if node['os'] == 'linux' 
   include_recipe 'rexden::linux'
 end
+
+# vi: expandtab ts=2 

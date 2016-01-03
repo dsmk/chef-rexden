@@ -8,3 +8,4 @@ if node['os'] == 'linux'
   include_recipe 'rexden::linux'
 end
 
+# vi: expandtab ts=2 

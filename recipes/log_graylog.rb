@@ -46,3 +46,5 @@ end
 #        command :allow
 #    end
 #end
+
+# vi: expandtab ts=2 

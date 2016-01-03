@@ -25,4 +25,4 @@ bash 'switch to graphical target' do
   not_if "/usr/bin/systemctl list-units --type target | grep graphical.target"
 end
 
-# vi:ts=2 expandtab 
+# vi: expandtab ts=2 

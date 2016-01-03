@@ -73,3 +73,4 @@ directory '/opt/archive' do
   mode '0755'
 end
 
+# vi: expandtab ts=2 

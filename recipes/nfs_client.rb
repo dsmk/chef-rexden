@@ -13,3 +13,5 @@ if node['platform_family'] == 'rhel'
   end
 
 end
+
+# vi: expandtab ts=2 

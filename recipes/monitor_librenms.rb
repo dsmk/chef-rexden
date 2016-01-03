@@ -142,3 +142,5 @@ end
 #  notifies :reload, 'service[httpd]', :immediately
 #end
 
+
+# vi: expandtab ts=2 

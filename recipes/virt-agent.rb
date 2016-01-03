@@ -20,3 +20,5 @@ end
 #           "platform_family": "rhel",
 #             "uptime_seconds": 4147,
 #
+
+# vi: expandtab ts=2 
