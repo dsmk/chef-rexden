@@ -62,8 +62,9 @@ suites:
   - name: default
     excludes: [ 'ark_server', 'monitor_server', 'log_server' ]
     run_list:
-      - recipe[rexden]
-      - recipe[rexden::_dev_vagrant]
+      - recipe[rexden::dev]
+#      - recipe[rexden]
+#      - recipe[rexden::_dev_vagrant]
     attributes:
       rexden:
         syslog_server: 192.168.33.20

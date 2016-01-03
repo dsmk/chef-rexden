@@ -14,7 +14,9 @@ log "os_ver=#{node['os_version']} arch=#{node['arch']} kernel_ver=#{kernel_ver}"
 %w( kernel-headers kernel-devel ).each do |pkg|
     package pkg do
       #version "#{ node['kernel']['release']}"
-      version kernel_ver
+      action :upgrade
+      # :latest
+      #kernel_ver
     end
 end
 
