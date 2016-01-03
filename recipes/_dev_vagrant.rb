@@ -1,22 +1,22 @@
-include_recipe 'epel'
+include_recipe 'yum-epel'
+include_recipe 'chef-dk'
 
 %w{
- binutils gcc make patch libgomp glibc-headers glibc-devel kernel-headers kernel-devel dkms
+ binutils gcc make patch libgomp glibc-headers glibc-devel dkms
 }.each do |pkg| 
   package pkg
 end
 
-#remote_file '/root/epel-release-7-5.noarch.rpm' do
-#  source "http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-5.noarch.rpm"
-#  owner 'root'
-#  group 'root'
-#  action :create
-#end
+kernel_ver = node['kernel']['release'].sub(".el7.#{node['kernel']['machine']}", '')
+log "os_ver=#{node['os_version']} arch=#{node['arch']} kernel_ver=#{kernel_ver}"
 
-#rpm_package 'epel-release' do
-#  source "/root/epel-release-7-5.noarch.rpm"
-#  action :install
-#end
+# doing the kernel packages for the version we are running
+%w( kernel-headers kernel-devel ).each do |pkg|
+    package pkg do
+      #version "#{ node['kernel']['release']}"
+      version kernel_ver
+    end
+end
 
 remote_file "/root/vagrant_#{node['rexden']['vagrant_version'] }_x86_64.rpm" do
   source "https://releases.hashicorp.com/vagrant/#{node['rexden']['vagrant_version'] }/vagrant_#{node['rexden']['vagrant_version'] }_x86_64.rpm"
@@ -31,17 +31,15 @@ rpm_package 'vagrant' do
 end
 
 # https://www.virtualbox.org/download/testcase/VirtualBox-5.0-5.0.11_104721_el7-1.x86_64.rpm
-#remote_file '/root/VirtualBox-5.0-5.0.11_104721_el7-1.x86_64.rpm' do
-#  source "https://www.virtualbox.org/download/testcase/VirtualBox-5.0-5.0.11_104721_el7-1.x86_64.rpm"
-##remote_file '/root/VirtualBox-5.0-5.0.10_104061_el7-1.x86_64.rpm' do
-##  source "http://download.virtualbox.org/virtualbox/5.0.10/VirtualBox-5.0-5.0.10_104061_el7-1.x86_64.rpm"
-#  owner 'root'
-#  group 'root'
-#  action :create
-#end
+remote_file "/root/VirtualBox-5.0-#{node['rexden']['virtualbox_rel']}_el7-1.x86_64.rpm" do
+  source "http://download.virtualbox.org/virtualbox/#{node['rexden']['virtualbox_version']}/VirtualBox-5.0-#{node['rexden']['virtualbox_rel']}_el7-1.x86_64.rpm"
+  owner 'root'
+  group 'root'
+  action :create
+end
 
-#package "VirtualBox" do
-#  source '/root/VirtualBox-5.0-5.0.11_104721_el7-1.x86_64.rpm' 
-#  #source "/root/VirtualBox-5.0-5.0.10_104061_el7-1.x86_64.rpm"
-#  action :install
-#end
+package "VirtualBox-5.0" do
+  source "/root/VirtualBox-5.0-#{node['rexden']['virtualbox_rel']}_el7-1.x86_64.rpm"
+  action :install
+end
+

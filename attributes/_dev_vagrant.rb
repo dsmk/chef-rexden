@@ -17,4 +17,6 @@
 # limitations under the License.
 
 default['rexden']['vagrant_version'] = '1.8.1'
+default['rexden']['virtualbox_version'] = "5.0.12"
+default['rexden']['virtualbox_rel'] = "5.0.12_104815"
 
