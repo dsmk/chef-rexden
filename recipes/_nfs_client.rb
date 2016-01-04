@@ -7,7 +7,7 @@ if node['platform_family'] == 'rhel'
     action :start
   end
 
-  service 'nfslock' do
+  service 'nfs-lock' do
     action :enable
     action :start
   end

@@ -16,6 +16,14 @@ platforms:
       vm_hostname: norris.rexden.us
       network:
         - [ "private_network", { ip: "192.168.33.21" } ]
+  - name: media_server
+    driver_config:
+      box: bento/centos-7.1
+      customize:
+        memory: 1024
+      vm_hostname: crookshanks.rexden.us
+      network:
+        - [ "private_network", { ip: "192.168.33.31" } ]
   - name: log_server
     driver_config:
       box: bento/centos-7.1
@@ -60,7 +68,7 @@ provisioner:
 
 suites:
   - name: default
-    excludes: [ 'ark_server', 'monitor_server', 'log_server' ]
+    excludes: [ 'ark_server', 'monitor_server', 'log_server', 'media_server' ]
     run_list:
       - recipe[rexden::dev]
 #      - recipe[rexden]
@@ -71,7 +79,7 @@ suites:
         ark_server_name: fawkes.rexden.us
         ark_server_ip: 192.168.33.19
   - name: ark
-    excludes: [ 'centos', 'monitor_server', 'log_server' ]
+    excludes: [ 'centos', 'monitor_server', 'log_server', 'media_server' ]
     driver:
       instance_name: ark_server
     run_list:
@@ -80,8 +88,18 @@ suites:
       rexden:
         ark_server_name: fawkes.rexden.us
         ark_server_ip: 192.168.33.19
+  - name: media
+    excludes: [ 'centos', 'ark_server', 'log_server', 'monitor_server' ]
+    driver:
+      instance_name: media_server
+    run_list:
+      - recipe[rexden::media_server]
+    attributes:
+      rexden:
+        ark_server_name: fawkes.rexden.us
+        ark_server_ip: 192.168.33.19
   - name: monitor
-    excludes: [ 'centos', 'ark_server', 'log_server' ]
+    excludes: [ 'centos', 'ark_server', 'log_server', 'media_server' ]
     driver:
       instance_name: monitor_server
     run_list:
@@ -91,7 +109,7 @@ suites:
         ark_server_name: fawkes.rexden.us
         ark_server_ip: 192.168.33.19
   - name: logs
-    excludes: [ 'centos', 'ark_server', 'monitor_server' ]
+    excludes: [ 'centos', 'ark_server', 'monitor_server', 'media_server' ]
     driver:
       instance_name: log_server
     run_list:
