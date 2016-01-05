@@ -20,7 +20,7 @@ bash 'switch to graphical target' do
   user 'root'
   group 'root'
   code <<-EOC
-    /usr/bin/systemctl isolate graphical.target
+    /usr/bin/systemctl isolate graphical.target &
   EOC
   not_if "/usr/bin/systemctl list-units --type target | grep graphical.target"
 end
