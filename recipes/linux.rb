@@ -1,4 +1,4 @@
-
+include_recipe 'rexden::ark_client'
 #include_recipe 'rexden::users::all'
 
 %w[
