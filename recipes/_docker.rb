@@ -17,4 +17,13 @@ template '/etc/sysconfig/docker' do
   notifies :restart, 'service[docker]', :immediately
 end
 
+# this allows anyone in the wheel group to do sudo docker without a password
+#
+cookbook_file '/etc/sudoers.d/docker' do
+  source 'sudoers.docker'
+  user 'root'
+  group 'root'
+  mode '0600'
+end
+
 # vi: expandtab ts=2 
