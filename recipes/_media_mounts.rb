@@ -8,20 +8,18 @@ directory "#{mroot}/music" do
   group "root"
 end
 
-[ 
- { path: "#{mroot}/music/active", remote: "#{mnfs}/music/active" },
- { path: "#{mroot}/music/playlists", remote: "#{mnfs}/music/playlists" },
- { path: "#{mroot}/video", remote: "#{mnfs}/video/rexden" },
- { path: "#{mroot}/video/staging", remote: "#{mnfs}/video/staging", dir_skip: true },
-].each do |m|
-  log "path=#{m[:path]} remote=#{m[:remote]}"
+node['rexden']['media_directories'].each do |m|
+  fullpath = "#{mroot}/#{m[:path]}"
+  fullnfs = "#{mnfs}/#{m[:nfs]}"
+
+  log "fullpath=#{fullpath} fullnfs=#{fullnfs}"
 
   if not m[:dir_skip] then
-    directory m[:path] 
+    directory fullpath
   end
 
-  mount m[:path] do
-    device m[:remote]
+  mount fullpath do
+    device fullnfs
     fstype 'nfs'
     options 'defaults,ro'
     action [ :enable, :mount ]

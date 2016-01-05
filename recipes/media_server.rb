@@ -1,5 +1,9 @@
 include_recipe 'rexden'
-include_recipe 'rexden::_media_mounts'
+if node['rexden']['media_mount'] then
+  include_recipe 'rexden::_media_mounts'
+else
+  include_recipe 'rexden::_media_local'
+end
 include_recipe 'rexden::_media_logitech'
 
 

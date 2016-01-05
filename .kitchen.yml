@@ -96,6 +96,7 @@ suites:
       - recipe[rexden::media_server]
     attributes:
       rexden:
+        media_mount: false
         ark_server_name: fawkes.rexden.us
         ark_server_ip: 192.168.33.19
   - name: monitor

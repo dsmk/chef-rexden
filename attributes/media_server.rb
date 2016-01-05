@@ -16,6 +16,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-default['rexden']['media_nfs_prefix'] = '192.168.8.12:/mnt/nas/media'
+default['rexden']['media_mount'] = true
 default['rexden']['media_root'] = '/opt'
+default['rexden']['media_nfs_prefix'] = '192.168.8.12:/mnt/nas/media'
 
+# the paths on with these directories are relative - media_root is suffixed in front of path 
+# and media_nfs_prefix in front of nfs
+#
+default['rexden']['media_directories'] = [
+ { path: "music/active", nfs: "music/active" },
+ { path: "music/playlists", nfs: "music/playlists" },
+ { path: "video", nfs: "video/rexden" },
+ { path: "video/staging", nfs: "video/staging", dir_skip: true },
+]
