@@ -16,7 +16,7 @@ end
 ].each do |m|
   log "path=#{m[:path]} remote=#{m[:remote]}"
 
-  if m[:dir_skip] then
+  if not m[:dir_skip] then
     directory m[:path] 
   end
 
