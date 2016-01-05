@@ -16,6 +16,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+default['rexden']['enable_push_jobs'] = true
+
+# defaults for Chef push jobs
+#
+default['push_jobs']['whitelist'] = {
+  "chef-client" => "chef-client",
+}
+
+# chef push jobs requires full URLs for Windows
+#
+if node['os'] == 'windows' then
+  default['push_jobs']['package_url'] = "https://opscode-push-jobs-client-packages.s3.amazonaws.com/push-1.3-stable/windows/2008r2/x86_64/push-jobs-client-1.3.4-1.msi"
+  default['push_jobs']['package_checksum'] = "622f6fa1f1f9828ada9c3f44b82f4abb90522050d961d373d19990db4e6a124a"
+end
+
 # do not configure rsyslog to send data to a remote log server
 default['rexden']['syslog_server'] = 'none'
 # you would want to set this in a location or role instead of globally

@@ -8,6 +8,9 @@
 #
 include_recipe "chef-client"
 include_recipe "chef-client::delete_validation"
+if node['rexden']['enable_push_jobs'] then
+  include_recipe 'push-jobs'
+end
 
 case node['os']
 when 'linux'
