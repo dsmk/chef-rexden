@@ -1,5 +1,4 @@
 include_recipe 'yum-epel'
-include_recipe 'chef-dk'
 
 %w{
  perl-CGI-Session 
