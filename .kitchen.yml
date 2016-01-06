@@ -40,6 +40,14 @@ platforms:
       vm_hostname: test-centos
       network:
         - [ "private_network", { ip: "192.168.33.231" } ]
+  - name: win2012r2
+    driver_config:
+      box: mwrock/Windows2012R2
+      customize:
+        memory: 2048
+      vm_hostname: test-win2012r2
+      network:
+        - [ "private_network", { ip: "192.168.33.232" } ]
 
 #driver:
 #  name: docker
@@ -72,9 +80,8 @@ suites:
   - name: default
     excludes: [ 'ark_server', 'monitor_server', 'log_server', 'media_server' ]
     run_list:
-      - recipe[rexden::dev]
-#      - recipe[rexden]
-#      - recipe[rexden::_dev_vagrant]
+#      - recipe[rexden::dev]
+      - recipe[rexden]
     attributes:
       rexden:
         enable_push_jobs: false
@@ -82,7 +89,7 @@ suites:
         ark_server_name: fawkes.rexden.us
         ark_server_ip: 192.168.33.19
   - name: ark
-    excludes: [ 'centos', 'monitor_server', 'log_server', 'media_server' ]
+    excludes: [ 'centos', 'monitor_server', 'log_server', 'media_server', 'win2012r2' ]
     driver:
       instance_name: ark_server
     run_list:
@@ -93,7 +100,7 @@ suites:
         ark_server_name: fawkes.rexden.us
         ark_server_ip: 192.168.33.19
   - name: media
-    excludes: [ 'centos', 'ark_server', 'log_server', 'monitor_server' ]
+    excludes: [ 'centos', 'ark_server', 'log_server', 'monitor_server', 'win2012r2' ]
     driver:
       instance_name: media_server
     run_list:
@@ -105,7 +112,7 @@ suites:
         ark_server_name: fawkes.rexden.us
         ark_server_ip: 192.168.33.19
   - name: monitor
-    excludes: [ 'centos', 'ark_server', 'log_server', 'media_server' ]
+    excludes: [ 'centos', 'ark_server', 'log_server', 'media_server', 'win2012r2' ]
     driver:
       instance_name: monitor_server
     run_list:
@@ -116,7 +123,7 @@ suites:
         ark_server_name: fawkes.rexden.us
         ark_server_ip: 192.168.33.19
   - name: logs
-    excludes: [ 'centos', 'ark_server', 'monitor_server', 'media_server' ]
+    excludes: [ 'centos', 'ark_server', 'monitor_server', 'media_server', 'win2012r2' ]
     driver:
       instance_name: log_server
     run_list:
