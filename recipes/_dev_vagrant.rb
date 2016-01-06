@@ -8,7 +8,7 @@ include_recipe 'chef-dk'
 end
 
 kernel_ver = node['kernel']['release'].sub(".el7.#{node['kernel']['machine']}", '')
-log "os_ver=#{node['os_version']} arch=#{node['arch']} kernel_ver=#{kernel_ver}"
+#log "os_ver=#{node['os_version']} arch=#{node['arch']} kernel_ver=#{kernel_ver}"
 
 # doing the kernel packages for the version we are running
 %w( kernel-headers kernel-devel ).each do |pkg|
