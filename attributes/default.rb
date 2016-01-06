@@ -16,7 +16,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-default['rexden']['enable_push_jobs'] = true
+# Change the default to false as we don't yet have push jobs working.
+#
+#default['rexden']['enable_push_jobs'] = true
+default['rexden']['enable_push_jobs'] = false
 
 # defaults for Chef push jobs
 #

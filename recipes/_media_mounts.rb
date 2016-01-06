@@ -12,7 +12,7 @@ node['rexden']['media_directories'].each do |m|
   fullpath = "#{mroot}/#{m[:path]}"
   fullnfs = "#{mnfs}/#{m[:nfs]}"
 
-  log "fullpath=#{fullpath} fullnfs=#{fullnfs}"
+  #log "fullpath=#{fullpath} fullnfs=#{fullnfs}"
 
   if not m[:dir_skip] then
     directory fullpath
