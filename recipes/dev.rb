@@ -1,4 +1,5 @@
 include_recipe 'rexden'
+include_recipe 'chef-dk'
 
 case node[:os]
 when 'linux'

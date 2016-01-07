@@ -1,5 +1,4 @@
 include_recipe 'yum-epel'
-include_recipe 'chef-dk'
 
 %w{
  binutils gcc make patch libgomp glibc-headers glibc-devel dkms
