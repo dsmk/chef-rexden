@@ -58,8 +58,14 @@ platforms:
 #  sudo_command: "/bin/sudo -E"
 
 provisioner:
-  #name: chef_solo
   name: chef_zero
+  client_rb:
+    # the following runs both convergance and audit 
+    #
+    audit_mode: :enabled
+    # the following only runs the audit controls
+    #
+    #audit_mode: :audit_only
 
 #platforms:
 #- name: ark_server
@@ -80,7 +86,8 @@ suites:
   - name: default
     excludes: [ 'ark_server', 'monitor_server', 'log_server', 'media_server' ]
     run_list:
-      - recipe[rexden::dev]
+      - recipe[rexden]
+      - recipe[rexden::web]
         #      - recipe[rexden]
     attributes:
       rexden:
