@@ -1,0 +1,146 @@
+---
+#driver:
+#  name: vagrant
+#  require_chef_omnibus: true
+driver:
+  name: docker
+
+platforms:
+  #  - name: ark_server
+  #  driver_config:
+  #    box: bento/centos-7.1
+  #    vm_hostname: fawkes.rexden.us
+  #    network:
+  #      - [ "private_network", { ip: "192.168.33.19" } ]
+  #- name: monitor_server
+  #  driver_config:
+  #    box: bento/centos-7.1
+  #    vm_hostname: norris.rexden.us
+  #    network:
+  #      - [ "private_network", { ip: "192.168.33.21" } ]
+  #- name: media_server
+  #  driver_config:
+  #    box: bento/centos-7.1
+  #    customize:
+  #      memory: 1024
+  #    vm_hostname: crookshanks.rexden.us
+  #    network:
+  #      - [ "private_network", { ip: "192.168.33.31" } ]
+  #- name: log_server
+  #  driver_config:
+  #    box: bento/centos-7.1
+  #    customize:
+  #      memory: 2048
+  #    vm_hostname: buckbeak.rexden.us
+  #    network:
+  #      - [ "private_network", { ip: "192.168.33.20" } ]
+  - name: centos
+    driver_config:
+      #image: centos:7.2.1511
+      image: milcom/centos7-systemd
+      platform: centos
+  #      memory: 2049
+  #    vm_hostname: test-centos
+  #    network:
+  #      - [ "private_network", { ip: "192.168.33.231" } ]
+  #- name: win2012r2
+  #  driver_config:
+  #    box: mwrock/Windows2012R2
+  #    customize:
+  #      memory: 2048
+  #    vm_hostname: test-win2012r2
+  #    network:
+  #      - [ "private_network", { ip: "192.168.33.232" } ]
+
+#driver:
+#  name: docker
+#  require_chef_omnibus: true
+#  memory: 1024k
+#  binary: /bin/docker
+#  use_sudo: true
+#  sudo_command: "/bin/sudo -E"
+
+provisioner:
+  name: chef_zero
+  client_rb:
+    # the following runs both convergance and audit 
+    #
+    audit_mode: :enabled
+    # the following only runs the audit controls
+    #
+    #audit_mode: :audit_only
+
+#platforms:
+#- name: ark_server
+#    driver_config:
+#      image: "centos/7"
+#      platform: "rhel"
+
+# Uncomment the following verifier to leverage Inspec instead of Busser (the
+# default verifier)
+# verifier:
+#   name: inspec
+
+#platforms:
+#  - name: ubuntu-14.04
+#  - name: centos-7.1
+
+suites:
+  - name: default
+  #excludes: [ 'ark_server', 'monitor_server', 'log_server', 'media_server' ]
+    run_list:
+      - recipe[rexden]
+      - recipe[rexden::web]
+      - recipe[rexden::_docker]
+        #      - recipe[rexden]
+    attributes:
+      rexden:
+        enable_push_jobs: false
+        syslog_server: 192.168.33.20
+        ark_server_name: fawkes.rexden.us
+        ark_server_ip: 192.168.33.19
+    #- name: ark
+    #excludes: [ 'centos', 'monitor_server', 'log_server', 'media_server', 'win2012r2' ]
+    #driver:
+    #  instance_name: ark_server
+    #run_list:
+    #  - recipe[rexden::ark_server]
+    #attributes:
+    #  rexden:
+    #    enable_push_jobs: false
+    #    ark_server_name: fawkes.rexden.us
+    #    ark_server_ip: 192.168.33.19
+    #- #name: media
+  #excludes: [ 'centos', 'ark_server', 'log_server', 'monitor_server', 'win2012r2' ]
+  #driver:
+  #    instance_name: media_server
+  #  run_list:
+  #    - recipe[rexden::media_server]
+  #  attributes:
+  #    rexden:
+  #      media_mount: false
+  #      enable_push_jobs: false
+  #      ark_server_name: fawkes.rexden.us
+  #      ark_server_ip: 192.168.33.19
+  #- name: monitor
+  #  excludes: [ 'centos', 'ark_server', 'log_server', 'media_server', 'win2012r2' ]
+  #  driver:
+  #    instance_name: monitor_server
+  #  run_list:
+  #    - recipe[rexden::monitor_server]
+  #  attributes:
+  #    rexden:
+  #      enable_push_jobs: false
+  #      ark_server_name: fawkes.rexden.us
+  #      ark_server_ip: 192.168.33.19
+  #- name: logs
+  #  excludes: [ 'centos', 'ark_server', 'monitor_server', 'media_server', 'win2012r2' ]
+  #  driver:
+  #    instance_name: log_server
+  #  run_list:
+  #    - recipe[rexden::log_server]
+  #  attributes:
+  #    rexden:
+  #      enable_push_jobs: false
+  #      ark_server_name: fawkes.rexden.us
+  #      ark_server_ip: 192.168.33.19
