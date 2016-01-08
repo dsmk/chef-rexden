@@ -1,7 +1,11 @@
 # /etc/sysconfig/docker
 
 # Modify these options if you want to change the way the docker daemon runs
+<% if node['rexden']['docker_tcp'] %>
+  OPTIONS='--selinux-enabled -H "<%= node['rexden']['docker_tcp'] %>" -H unix:////var/run/docker.sock'
+<% else %>
 OPTIONS='--selinux-enabled'
+<% end %>
 
 DOCKER_CERT_PATH=/etc/docker
 

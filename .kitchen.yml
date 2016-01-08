@@ -88,6 +88,7 @@ suites:
     run_list:
       - recipe[rexden]
       - recipe[rexden::web]
+      - recipe[rexden::_docker]
         #      - recipe[rexden]
     attributes:
       rexden:

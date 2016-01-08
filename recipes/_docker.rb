@@ -26,4 +26,13 @@ cookbook_file '/etc/sudoers.d/docker' do
   mode '0600'
 end
 
+if node['rexden']['docker_tcp']
+  template '/etc/profile.d/docker.sh' do
+    user 'root'
+    group 'root'
+    mode '0444'
+    source 'profiled.docker.erb'
+  end
+end
+
 # vi: expandtab ts=2 
