@@ -86,7 +86,7 @@ suites:
   - name: default
     excludes: [ 'ark_server', 'monitor_server', 'log_server', 'media_server' ]
     run_list:
-      - recipe[rexden]
+      - recipe[rexden::dev]
     attributes:
       rexden:
         enable_push_jobs: false
