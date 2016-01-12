@@ -1,4 +1,0 @@
-# Random delay of up to 30 minutes so we don't do the initial scan all at the same time
-RANDOM_DELAY=30
-# Run once per night by default
-30 1 * * * root /usr/local/sbin/ark -S >/var/log/ark.log 2>&1

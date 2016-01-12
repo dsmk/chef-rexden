@@ -1,2 +1,0 @@
-# This command is used by push-rsync for limited root access to back stuff up
-backup  ALL=(root)      NOPASSWD:       /usr/local/sbin/push-rsync.sh

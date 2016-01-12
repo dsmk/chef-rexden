@@ -1,11 +1,11 @@
-include_recipe 'rexden'
+include_recipe 'rexcore'
 include_recipe 'chef-dk'
 
 case node[:os]
 when 'linux'
-  include_recipe 'rexden::_graphical'
+  include_recipe 'rexcore::_graphical'
   include_recipe 'rexden::_dev_vagrant'
-  include_recipe 'rexden::_docker'
+  include_recipe 'rexcore::_docker'
   include_recipe 'rexden::_dev_hub'
 when 'windows'
   include_recipe 'rexden::_dev_windows'

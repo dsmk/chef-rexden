@@ -98,7 +98,7 @@ suites:
     driver:
       instance_name: ark_server
     run_list:
-      - recipe[rexden::ark_server]
+      - recipe[rexbackup]
     attributes:
       rexden:
         enable_push_jobs: false

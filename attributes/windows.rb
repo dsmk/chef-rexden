@@ -1,4 +1,0 @@
-default['chocolatey']['packages'] = [
-  'ConEmu',
-]
-

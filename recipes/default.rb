@@ -6,17 +6,7 @@
 #
 # Copyright (c) 2015 The Authors, All Rights Reserved.
 #
-include_recipe "chef-client"
-include_recipe "chef-client::delete_validation"
-if node['rexden']['enable_push_jobs'] then
-  include_recipe 'push-jobs'
-end
 
-case node['os']
-when 'linux'
-  include_recipe 'rexden::linux'
-when 'windows'
-  include_recipe 'rexden::windows'
-end
-
-# vi: expandtab ts=2 
+# Just go get the version in rexcore
+#
+include_recipe "rexcore::default"
